@@ -16,3 +16,11 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 ## Dependency Management
 
 The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+
+
+## Batch 
+In this project, I have created a batch file to run the java program. And later I will test this batch in diffent technologes.
+
+Made by love ❤️
+```
+``` 
