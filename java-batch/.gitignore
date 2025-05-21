@@ -1,0 +1,7 @@
+# compiled files
+bin/
+
+# IDE files
+.idea/
+.vscode/
+
