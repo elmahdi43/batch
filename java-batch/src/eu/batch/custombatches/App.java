@@ -1,61 +1,60 @@
 package eu.batch.custombatches;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
+import java.time.Duration;
+
+import eu.batch.custombatches.config.BatchRunner;
+import eu.batch.custombatches.impl.NumberIncrementFileBatch;
 
 /**
- * App is a class for testing the batch processing of the data using java 21 features.
+ * Main application for running the file batch process.
  * 
  * <p>
- * The App class provides a main method to test the batch processing of the data.
+ * This application reads a file containing numbers, increments each number by 1,
+ * and writes the results back to the file at regular intervals.
  * </p>
  * 
  * @author elmahdi43
- * @version 1.0
- * @since 2025-03-26
+ * @version 2.0
+ * @since 2025-05-14
  */
-
- // TODO: configure a batch in java 21 to read a file and increment each line by 1 and write the new content to the file. And after think about how can i usse my applying table to crate a small app. i may use spring batch to do it.
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Please provide file path as an argument");
             return;
         }
 
-        String path = args[0];
-        System.out.println("Path: " + path);
-
-        long startTime = System.currentTimeMillis();
-        long duration = 60 * 60 * 1000; // 1 hour in milliseconds
-        long interval = 3 * 60 * 1000; // 3 minutes in milliseconds
-
-        while (System.currentTimeMillis() - startTime < duration) {
-            try {
-                String content = Files.readString(Path.of(path));
-                System.out.println("File content before processing: ");
-                System.out.println(content);
-
-                String[] lines = content.split("\n");
-
-                StringBuilder sb = new StringBuilder();
-                for (String line : lines) {
-                    int index = Integer.parseInt(line.trim());
-                    sb.append(index + 1).append("\n");
-                }
-
-                System.out.println("File content after processing: ");
-                System.out.println(sb.toString());
-                // write the new content to the file
-                Files.write(Path.of(path), sb.toString().getBytes());
-
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
-
-            Thread.sleep(interval); // Wait for 3 minutes before the next execution
+        String filePath = args[0];
+        File file = new File(filePath);
+        
+        if (!file.exists()) {
+            System.err.println("File does not exist: " + filePath);
+            return;
         }
+        
+        System.out.println("Starting batch process for file: " + filePath);
+        
+        // Create batch implementation
+        NumberIncrementFileBatch batch = new NumberIncrementFileBatch();
+        
+        // Configure the batch runner
+        Duration interval = Duration.ofMinutes(3);
+        Duration duration = Duration.ofHours(1);
+        BatchRunner<File, String> batchRunner = new BatchRunner<>(batch, file, interval, duration);
+        
+        // Add shutdown hook for graceful termination
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down batch process...");
+            batchRunner.stop();
+        }));
+        
+        // Start the batch process
+        batchRunner.start();
+        
+        System.out.println("Batch process started. Will run for " + 
+                          duration.toMinutes() + " minutes with " + 
+                          interval.toMinutes() + " minute intervals.");
+        System.out.println("Press Ctrl+C to stop.");
     }
 }
