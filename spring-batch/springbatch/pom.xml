@@ -12,7 +12,7 @@
 	<artifactId>springbatch</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>springbatch</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Implementing a Spring Batch application</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -35,6 +35,16 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-batch</artifactId>
+    	</dependency>
+		<!-- Database for job repository (H2 for simplicity) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
