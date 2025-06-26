@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.lang.Nullable;
 
 @Configuration
 public class BatchConfiguration {
@@ -43,7 +44,7 @@ public class BatchConfiguration {
     public ItemProcessor<String, String> processor() {
         return new ItemProcessor<String, String>() {
             @Override
-            public String process(String item) throws Exception {
+            public String process(@Nullable String item) throws Exception {
                 try {
                     int number = Integer.parseInt(item);
                     return String.valueOf(number + 1);
@@ -73,11 +74,10 @@ public class BatchConfiguration {
                                    ItemProcessor<String, String> processor,
                                    ItemWriter<String> writer) {
         return new StepBuilder("incrementNumbersStep", jobRepository)
-                .<String, String>chunk(10) // Process 10 items at a time
+                .<String, String>chunk(10, transactionManager) // Process 10 items at a time
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-                .transactionManager(transactionManager)
                 .build();
     }
 
